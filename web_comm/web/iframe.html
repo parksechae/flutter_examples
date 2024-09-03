@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebMessageChannel Test</title>
+</head>
+
+<body>
+    <h1>Web Message Channle Test...</h1>
+    <!-- when you click this button, it will send a message to the Dart side -->
+     <div>
+        <input id="input" type="text" value="JavaScript To Native" /><button id="button" onclick="sendToApp()" />send to app</button>
+        <p>received : <span id="receivedMessage"></span></p>
+     </div>
+    
+
+    <script>
+        // variable that will represents the port used to communicate with the Dart side
+        var port;
+        // listen for messages
+        window.addEventListener('message', function (event) {
+            console.log("--------------");
+            console.log(event);
+            alert('received message from app : ' + event.data);
+            console.log("--------------");
+            if (event.data == 'capturePort') {
+                // capture port2 coming from the Dart side
+                if (event.ports[0] != null) {
+                    // the port is ready for communication,
+                    // so you can use port.postMessage(message); wherever you want
+                    port = event.ports[0];
+
+                    console.log('#####################################################');
+                    if (port == null) {
+                        console.log('port is null');
+                    } else {
+                        console.log('port is not null');
+                        console.log(port);  
+                    }
+                    
+                    console.log('#####################################################');
+                    // To listen to messages coming from the Dart side, set the onmessage event listener
+                    port.onmessage = function (event) {
+                        // event.data contains the message data coming from the Dart side
+                        console.log('received from app : ' + event.data);
+                        document.getElementById('receivedMessage').innerText = event.data;
+                        // window.port.postMessage(`[${new Date().toISOString()}] success : received app request`);
+                    };
+                }
+            }
+        }, false);
+
+        function sendToApp() {
+            // console.dir(port1);
+            // console.dir(port2);
+            if (window.port == null) {
+                console.log('Port is not ready yet');
+                alert('Port is not ready yet');
+                return;
+            } else {
+                // alert('Port is ready');
+                var r = window.port.postMessage(`[${new Date().toISOString()}] ${input.value}`);
+                console.log('result :' + r);
+
+            }
+        }
+    </script>
+</body>
+
+</html>

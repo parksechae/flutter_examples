@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InAppWebview Page (Javascript Handler)</title>
+</head>
+<body style="border: 1px solid black;">
+    <h1>InAppWebview Page (Javascript Handler)</h1>
+    
+    <div>
+    receivedFromApp : <span id="message"></span>
+    </div>
+    <br>
+    <div>
+    <button onclick="fromWebToApp('hello app')">sendToApp</button>
+    </div>
+
+    <script type="text/javascript">
+        var isFlutterInAppWebViewReady = false;
+            window.addEventListener("flutterInAppWebViewPlatformReady", function (event) {
+                isFlutterInAppWebViewReady = true;
+            });
+
+
+        fromWebToApp = function (message) {
+            console.log('>>>>>>>>>>>>> [Web -> APP]: ', message);
+            if (isFlutterInAppWebViewReady) {
+                window.flutter_inappwebview.callHandler('fromWebToApp', new Date().toISOString()).then((result) => {
+                    console.log(`### [Web -> APP]: , ${result}`);
+                    document.getElementById('message').innerText = result.toString();
+                    for (let v of result) {
+                        console.log(`### [Web -> APP]: , ${v}`);
+                    }
+                    // console.log(`### [Web -> APP]: , ${result[0]}`);
+                    // console.log(`### [Web -> APP]: , ${result[1]}`);
+                    console.log(`### [Web -> APP]: , ${result[2].name}`);
+                });
+            } else {
+                alert('FlutterInAppWebView is not ready');
+            }
+        }
+
+        fromAppToWeb = function (message) {
+            document.getElementById('message').innerText = message;
+            console.log('>>>>>>>>>>>>> [App -> Web]: ', message);
+            
+            return [`[${new Date().toISOString()}]`, 'success'];    
+        }
+    </script>
+</body>
+</html>
